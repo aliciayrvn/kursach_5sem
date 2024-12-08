@@ -7,32 +7,27 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func main() {
-	// Настройка строки подключения
-	dsn := "host=postgres-car user=postgres password=example dbname=car_db port=5432 sslmode=disable"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	// Подключение к БД PostgreSQL для машин
+	db, err := models.ConnectDB()
 	if err != nil {
-		log.Fatalf("Ошибка подключения к базе данных: %v", err)
+		log.Fatal(err)
 	}
 
-	// Миграция
-	db.AutoMigrate(&models.Car{})
-
-	// Инициализация сервисов и контроллеров
+	// Инициализация сервисов
 	carService := services.NewCarService(db)
 	carController := controllers.NewCarController(carService)
 
-	// Настройка маршрутов Gin
+	// Инициализация Gin
 	r := gin.Default()
 
-	r.GET("/cars/:id", carController.GetCar)
+	// Роуты
 	r.GET("/cars", carController.ListCars)
 	r.POST("/cars", carController.CreateCar)
+	r.GET("/cars/:id", carController.GetCar)
 
 	// Запуск сервера
-	r.Run(":8082")
+	r.Run(":8081")
 }

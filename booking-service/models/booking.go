@@ -5,14 +5,15 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
+type Booking struct {
 	gorm.Model
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	UserID uint   `json:"user_id"`
+	CarID  uint   `json:"car_id"`
+	Status string `json:"status"`
 }
 
 func ConnectDB() (*gorm.DB, error) {
-	// Подключение к PostgreSQL
+	// Подключение к PostgreSQL для бронирований
 	dsn := "host=postgres-user user=postgres password=example dbname=user_db port=5432 sslmode=disable"
 	return gorm.Open(postgres.Open(dsn), &gorm.Config{})
 }

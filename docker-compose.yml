@@ -53,6 +53,13 @@ services:
       - DB_PASSWORD=example
       - RABBITMQ_HOST=rabbitmq
 
+  booking-service:
+    build: ./booking-service
+    depends_on:
+      - postgres-user
+      - postgres-car
+      - rabbitmq
+
   rabbitmq:
     image: rabbitmq:3-management
     ports:

@@ -1,21 +1,19 @@
-# Используем официальный образ Go в качестве базового
-FROM golang:1.22
+# Для сборки образа API Gateway
+FROM golang:1.22 AS builder
 
 
-# Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# Копируем файлы проекта в рабочую директорию
+# Копируем модули и устанавливаем их
 COPY go.mod go.sum ./
-RUN go mod download
+RUN go mod tidy
 
+# Копируем исходный код
 COPY . .
 
-# Собираем приложение
-RUN go build -o main .
+# Сборка
+RUN go build -o api-gateway .
 
-# Указываем порт, который будет прослушиваться
 EXPOSE 8080
 
-# Запускаем приложение
-CMD ["./main"]
+CMD ["./api-gateway"]

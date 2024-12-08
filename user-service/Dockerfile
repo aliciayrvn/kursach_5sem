@@ -1,21 +1,20 @@
-# Используем официальный образ Go в качестве базового
-FROM golang:1.22
+# Для сборки образа User-Service
+# Dockerfile для сервисов
+FROM golang:1.22 AS builder
 
 
-# Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# Копируем файлы проекта в рабочую директорию
+# Копируем модули и устанавливаем их
 COPY go.mod go.sum ./
-RUN go mod download
+RUN go mod tidy
 
+# Копируем исходный код
 COPY . .
 
-# Собираем приложение
-RUN go build -o main .
+# Сборка
+RUN go build -o user-service .
 
-# Указываем порт, который будет прослушиваться
-EXPOSE 8081
+EXPOSE 8080
 
-# Запускаем приложение
-CMD ["./main"]
+CMD ["./user-service"]

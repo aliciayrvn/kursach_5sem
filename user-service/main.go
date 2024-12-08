@@ -7,33 +7,27 @@ import (
 	"user-service/services"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func main() {
-	// Настройка строки подключения к базе данных
-	dsn := "host=postgres-user user=postgres password=example dbname=user_db port=5432 sslmode=disable"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	// Подключение к БД PostgreSQL
+	db, err := models.ConnectDB()
 	if err != nil {
-		log.Fatalf("Ошибка подключения к базе данных: %v", err)
+		log.Fatal(err)
 	}
 
-	// Миграция базы данных
-	db.AutoMigrate(&models.User{})
-
-	// Инициализация сервисов и контроллеров
+	// Инициализация сервисов
 	userService := services.NewUserService(db)
 	userController := controllers.NewUserController(userService)
 
-	// Настройка маршрутов с помощью Gin
+	// Инициализация Gin
 	r := gin.Default()
 
-	// Роуты для управления пользователями
-	r.GET("/users/:id", userController.GetUser)
+	// Роуты
 	r.GET("/users", userController.ListUsers)
 	r.POST("/users", userController.CreateUser)
+	r.GET("/users/:id", userController.GetUser)
 
-	// Запуск сервера на порту 8081
-	r.Run(":8081")
+	// Запуск сервера
+	r.Run(":8080")
 }
