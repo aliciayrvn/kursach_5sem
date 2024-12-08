@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-service
+      - car-service
+
+  postgres-user:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: user_db
+    ports:
+      - "5432:5432"
+
+  postgres-car:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: car_db
+    ports:
+      - "5433:5432"
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - rabbitmq
+    environment:
+      - DB_HOST=postgres-user  # Имя контейнера для user_db
+      - DB_NAME=user_db
+      - DB_USER=postgres
+      - DB_PASSWORD=example
+      - RABBITMQ_HOST=rabbitmq
+
+  car-service:
+    build: ./car-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - rabbitmq
+    environment:
+      - DB_HOST=postgres-car  # Имя контейнера для car_db
+      - DB_NAME=car_db
+      - DB_USER=postgres
+      - DB_PASSWORD=example
+      - RABBITMQ_HOST=rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"

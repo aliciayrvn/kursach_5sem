@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package car;
+
+service CarService {
+  rpc GetCar (CarRequest) returns (CarResponse);
+  rpc ListCars (Empty) returns (CarListResponse);
+  rpc CreateCar (CreateCarRequest) returns (CarResponse);
+}
+
+message CarRequest {
+  int32 id = 1;
+}
+
+message CreateCarRequest {
+  string model = 1;
+  string license_plate = 2;
+  bool available = 3;
+}
+
+message CarResponse {
+  int32 id = 1;
+  string model = 2;
+  string license_plate = 3;
+  bool available = 4;
+}
+
+message CarListResponse {
+  repeated CarResponse cars = 1;
+}
+
+message Empty {}
